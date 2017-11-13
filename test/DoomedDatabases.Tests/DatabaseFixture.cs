@@ -12,6 +12,7 @@ namespace DoomedDatabases.Tests
         {
             testDatabase = new TestDatabaseBuilder().WithConnectionString("User ID=integration_test_user;Password=432423ff;Server=localhost;Database=postgres;").Build();
             testDatabase.Create();
+            testDatabase.RunScripts("./DatabaseScripts");
         }
 
         public void Dispose()
