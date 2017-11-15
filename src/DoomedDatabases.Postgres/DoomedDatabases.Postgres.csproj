@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
+    <Version>0.1.0</Version>
+    <Authors>Ufuk Hacıoğulları</Authors>
+    <Desciption>Dynamically create Postgres databases for testing</Desciption>
   </PropertyGroup>
 
   <ItemGroup>
