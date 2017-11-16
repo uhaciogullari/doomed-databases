@@ -1,23 +1,34 @@
 ﻿using System;
 using DoomedDatabases.Postgres;
+using DoomedDatabases.Tests.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace DoomedDatabases.Tests
 {
     public class DatabaseFixture : IDisposable
     {
-        private readonly ITestDatabase testDatabase;
-
         public DatabaseFixture()
         {
-            testDatabase = new TestDatabaseBuilder().WithConnectionString("User ID=integration_test_user;Password=432423ff;Server=localhost;Database=postgres;").Build();
-            testDatabase.Create();
-            testDatabase.RunScripts("./DatabaseScripts");
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            TestDatabase = new TestDatabaseBuilder().WithConfiguration(configuration).WithTemplateDatabase("").Build();
+            TestDatabase.Create();
+
+            var builder = new DbContextOptionsBuilder<TestDbContext>();
+            builder.UseNpgsql(TestDatabase.ConnectionString);
+            DbContext = new TestDbContext(builder.Options);
+            DbContext.Database.EnsureCreated();
         }
+
+
+        public ITestDatabase TestDatabase { get; }
+
+        public TestDbContext DbContext { get; }
 
         public void Dispose()
         {
-            testDatabase.Drop();
+            TestDatabase.Drop();
         }
     }
 

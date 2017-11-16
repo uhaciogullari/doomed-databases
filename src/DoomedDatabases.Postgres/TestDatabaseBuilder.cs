@@ -7,7 +7,7 @@ namespace DoomedDatabases.Postgres
     {
         private string connectionString;
         private string connectionStringName = "DefaultConnection";
-        private string databaseTemplate;
+        private string templateDatabase;
         private IConfiguration configuration;
         private readonly DatabaseNameGenerator databaseNameGenerator = new DatabaseNameGenerator();
 
@@ -35,9 +35,9 @@ namespace DoomedDatabases.Postgres
             return this;
         }
 
-        public TestDatabaseBuilder WithDatabaseTemplate(string value)
+        public TestDatabaseBuilder WithTemplateDatabase(string value)
         {
-            databaseTemplate = value;
+            templateDatabase = value;
             return this;
         }
 
@@ -59,7 +59,7 @@ namespace DoomedDatabases.Postgres
 
             return new TestDatabase(new ConnectionStringManager(connectionString), databaseNameGenerator, new Connection())
             {
-                DatabaseTemplate = databaseTemplate
+                TemplateDatabase = templateDatabase
             };
         }
     }

@@ -31,9 +31,9 @@ namespace DoomedDatabases.Postgres
         {
             StringBuilder stringBuilder = new StringBuilder($"create database {createdDatabaseName}");
 
-            if (!string.IsNullOrWhiteSpace(DatabaseTemplate))
+            if (!string.IsNullOrWhiteSpace(TemplateDatabase))
             {
-                stringBuilder.Append($" template {DatabaseTemplate}");
+                stringBuilder.Append($" template {TemplateDatabase}");
             }
 
             stringBuilder.Append(";");
@@ -63,6 +63,6 @@ namespace DoomedDatabases.Postgres
             connection.Execute(connectionStringManager.Default, $"drop database {createdDatabaseName};");
         }
 
-        public string DatabaseTemplate { get; set; }
+        public string TemplateDatabase { get; set; }
     }
 }
