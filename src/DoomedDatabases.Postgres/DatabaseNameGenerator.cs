@@ -8,7 +8,8 @@ namespace DoomedDatabases.Postgres
 
         public string Generate()
         {
-            return $"{Prefix}{DateTime.UtcNow.Ticks}";
+            string id = Guid.NewGuid().ToString().Replace("-","");
+            return $"{Prefix}{DateTime.UtcNow.Ticks}{id}";
         }
     }
 }
