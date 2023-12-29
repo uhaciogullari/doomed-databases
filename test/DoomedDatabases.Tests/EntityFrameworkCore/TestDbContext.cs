@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DoomedDatabases.Tests.EntityFrameworkCore
 {
@@ -9,49 +10,45 @@ namespace DoomedDatabases.Tests.EntityFrameworkCore
         public string Username { get; set; }
     }
 
-    public class TestDbContext : DbContext
+    public class TestDbContext(DbContextOptions options) : DbContext(options)
     {
-        public TestDbContext(DbContextOptions options) : base(options)
-        {
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            //modelBuilder.UsePostgresConventions();
+            modelBuilder.UsePostgresConventions();
         }
 
         public DbSet<User> Users { get; set; }
     }
 
-    static class ModelBuilderExtensions
+    static partial class ModelBuilderExtensions
     {
         public static void UsePostgresConventions(this ModelBuilder modelBuilder)
         {
-            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
             {
                 // Replace table names
-                entity.Relational().TableName = entity.Relational().TableName.ToSnakeCase();
+                entity.SetTableName(entity.GetTableName().ToSnakeCase());
 
                 // Replace column names            
-                foreach (var property in entity.GetProperties())
+                foreach (IMutableProperty property in entity.GetProperties())
                 {
-                    property.Relational().ColumnName = property.Name.ToSnakeCase();
+                    property.SetColumnName(property.GetColumnName().ToSnakeCase());
                 }
 
-                foreach (var key in entity.GetKeys())
+                foreach (IMutableKey key in entity.GetKeys())
                 {
-                    key.Relational().Name = key.Relational().Name.ToSnakeCase();
+                    key.SetName(key.GetName().ToSnakeCase());
                 }
 
-                foreach (var key in entity.GetForeignKeys())
+                foreach (IMutableForeignKey key in entity.GetForeignKeys())
                 {
-                    key.Relational().Name = key.Relational().Name.ToSnakeCase();
+                    key.SetConstraintName(key.GetConstraintName().ToSnakeCase());
                 }
 
-                foreach (var index in entity.GetIndexes())
+                foreach (IMutableIndex index in entity.GetIndexes())
                 {
-                    index.Relational().Name = index.Relational().Name.ToSnakeCase();
+                    index.SetDatabaseName(index.GetDatabaseName().ToSnakeCase());
                 }
             }
 
@@ -61,9 +58,14 @@ namespace DoomedDatabases.Tests.EntityFrameworkCore
         {
             if (string.IsNullOrEmpty(input)) { return input; }
 
-            var startUnderscores = Regex.Match(input, @"^_+");
-            return startUnderscores + Regex.Replace(input, @"([a-z0-9])([A-Z])", "$1_$2").ToLower();
+            var startUnderscores = StartUnderscoreRegex().Match(input);
+            return startUnderscores + SnakeCaseRegex().Replace(input, "$1_$2").ToLower();
         }
-    }
 
+        [GeneratedRegex(@"([a-z0-9])([A-Z])")]
+        private static partial Regex SnakeCaseRegex();
+
+        [GeneratedRegex(@"^_+")]
+        private static partial Regex StartUnderscoreRegex();
+    }
 }
