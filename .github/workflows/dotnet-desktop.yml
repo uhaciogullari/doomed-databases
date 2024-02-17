@@ -73,4 +73,4 @@ jobs:
     - name: Build
       run: dotnet build --no-restore --configuration Release
     - name: Test
-      run: dotnet test ./test/DoomedDatabases.Tests.csproj
+      run: dotnet test ./test/DoomedDatabases.Tests/DoomedDatabases.Tests.csproj
