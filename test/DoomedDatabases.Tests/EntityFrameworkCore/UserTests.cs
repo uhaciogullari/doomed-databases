@@ -7,7 +7,7 @@ namespace DoomedDatabases.Tests.EntityFrameworkCore
     [Collection("Database")]
     public class UserTests
     {
-        private TestDbContext testDbContext;
+        private readonly TestDbContext testDbContext;
 
         public UserTests(DatabaseFixture databaseFixture)
         {
